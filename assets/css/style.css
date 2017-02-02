@@ -18,6 +18,16 @@
   margin-right: auto;
 }
 
+.disclaimer {
+  width: 24em;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+  color: #666;
+  font-size: 0.8em;
+  padding-bottom: 1em;
+}
+
 .drop-zone {
   border: 6px solid aliceblue;
   min-width: 16em;
