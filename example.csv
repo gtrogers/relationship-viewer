@@ -1,10 +1,9 @@
-name,company,legacy,cloud,data,security,voice
+NAME,COMAPANY,LEGACY,CLOUD,DATA,SECURITY,VOICE
 Agatha,SomethingInc,y,n,n,n,y
 Jane,MegaWorks,y,y,n,y,n
 Susie,ThoughtCraft,n,y,n,y,n
 Clare,Someplace,n,n,y,y,y
-Rebecca,ThoughtWorks,y,y,y,y,n
+Samantha,SomethingWorks,y,y,y,y,y
 Alison,CompanyName,y,n,n,n,y
 Imogen,CorpCorp,n,n,n,y,n
 Sarah,VoiceInc,n,y,n,n,y
-Tim,SomethingInc,n,n,n,n,n
