@@ -1,0 +1,52 @@
+/* custom styles */
+
+.links line {
+  stroke: #999;
+  stroke-opactiy: 0.6;
+}
+
+.nodes circle {
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.title {
+  width: 16em;
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.drop-zone {
+  border: 6px solid aliceblue;
+  min-width: 16em;
+  min-height: 16em;
+  max-width: 40em;
+  margin: auto;
+}
+
+.target {
+  background: repeating-linear-gradient(
+    45deg,
+    white,
+    white 4em,
+    aliceblue 4em,
+    aliceblue 8em
+  );
+  border: 8px dashed lightblue;
+}
+
+.wrapper {
+  min-width: 16em;
+  max-width: 40em;
+  margin: auto;
+}
+
+img {
+  max-width: inherit;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}

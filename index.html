@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Title</title>
+  </head>
+
+  <body id="main">
+    <article>
+      <section>
+	<h1 class="title">Relationship Visualiser (Alpha)</h1>
+	<div id="drop-zone" class="drop-zone">
+	  <figure>
+	    <div id="graph-container">
+	      <svg width=600 height=400></svg>
+            </div>
+	    <figcaption>
+	    <p>Drag a CSV file into the box to see a force-directed graph of the relationships between individuals based on shared interestes. See below for more instructions and an example file.</p>
+	    <p>The closer the dots the more common interests the parties have - mouse over to see the names.</p>
+	    </figcaption>
+	  </figure>
+	</div>
+      </section>
+      <section>
+       <div class="wrapper">
+         <h2>File Format</h2>
+         <p>The easiest way to generate data is to create a CSV which looks like this:</p>
+	 <img src="/img/example.png"></img>
+         <p>The first two columns are required, the rest of the columns can be customised to whichever categories you need.</p>
+         <p>Put a 'y' (for yes) in the cell if the person is interested.</p>
+         <p>Put a 'n' (for no) in the cell if the person is not interested.</p>
+         <p>Once your CSV is filled in you can download from google docs (File - Download As - Comma Seperated Values). Once you have your .CSV file, drag it onto the square above.</p>
+       </div>
+      </section>
+    </article>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="/js/lib/d3.v4.min.js"></script>
+    <script type="text/javascript" src="/js/script.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+  </body>
+
+</html>
