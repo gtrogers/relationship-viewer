@@ -33,14 +33,14 @@ vis.dragEndHandler = function (event) {
 }
 
 vis.processData = function (data) {
-  var similarity = function (person1, person2) {
+  var getSimilar = function (person1, person2) {
     var interestColumns = data.columns.slice(2, data.columns.length);
-    var similarCount = 0;
+    var similar = [];
     interestColumns.forEach(function (interest) {
-      if (person1[interest] == 'y' && person2[interest] == 'y') similarCount++;
+      if (person1[interest] == 'y' && person2[interest] == 'y') similar.push(interest);
     });
 
-    return similarCount;
+    return similar;
   };
 
   var processedData = {
@@ -51,12 +51,14 @@ vis.processData = function (data) {
   for (var i = 0; i < data.length; i++) {
     for (var j = 0; j < data.length; j++) {
       if (i === j) break;
-      var sameness = similarity(data[i], data[j]);
-      if (sameness > 0) {
+      var sameness = getSimilar(data[i], data[j]);
+      if (sameness.length > 0) {
         processedData.links.push({
+          "is": "link",
           "source": data[i].name,
           "target": data[j].name,
-          "value": sameness
+          "value": sameness.length,
+          "label": sameness
         });
       }
     }
@@ -65,6 +67,7 @@ vis.processData = function (data) {
   for (var i = 0; i  < data.length; i++) {
     processedData.nodes.push({
       id: data[i].name,
+      is: "node",
       datum: data[i],
       group: 1
     });
@@ -93,28 +96,42 @@ vis.drawGraph = function (csvUrl, centerX, centerY) {
     
     var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id }))
-      .force("charge", d3.forceManyBody().strength(-75))
+      .force("charge", d3.forceManyBody().strength(-100))
       .force("center", d3.forceCenter(cx, cy));
 
     var hoverHandler = function (d, i) {
-      d3.select(this)
-        .attr('fill', d3.rgb(247, 143, 49))
-        .attr('r', 7);
+      var elem = d3.select(this);
+      
+      if (d.is === "node") {
+        elem
+          .attr('fill', d3.rgb(247, 143, 49))
+          .attr('r', 7);
 
-      console.log(d);
-      d3.select('svg')
-        .append('text')
-        .attr('id', 'label')
-        .attr('x', 16)
-        .attr('y', 16)
-        .text(d.datum.name + " " + d.datum.company);
+        d3.select('svg')
+          .append('text')
+          .attr('id', 'label')
+          .attr('x', 16)
+          .attr('y', 16)
+          .text(d.datum.name + " " + d.datum.company);
+      }
+
+      if (d.is === "link") {
+        d3.select('svg').append('text').attr('id', 'label').attr('x', 16).attr('y', 16).text(d.label);
+        elem.attr('stroke', d3.rgb(26, 115, 186));
+      }
     }
 
     var hoverEndHandler = function (d, i) {
-      d3.select(this)
-        .attr('fill', color(i))
-        .attr('r', 5);
+      if (d.is === "node") {
+        d3.select(this)
+          .attr('fill', color(i))
+          .attr('r', 5);
+      }
 
+      if (d.is === "link") {
+        d3.select(this)
+          .attr('stroke', '#999');
+      }
       d3.select('#label').remove();
     }
 
@@ -123,8 +140,11 @@ vis.drawGraph = function (csvUrl, centerX, centerY) {
       .data(DATA.links)
       .enter()
       .append('line')
+      .attr('stroke', '#999')
       .attr('stroke-width', function (d) { return (d.value/5) * 10; }) // TODO - use total number of categories for normalisation
-      .attr('opacity', function (d) { return (d.value/5)*0.5 + 0.5 });
+      .attr('opacity', function (d) { return (d.value/5)*0.5 + 0.5 })
+      .on("mouseover", hoverHandler)
+      .on("mouseout", hoverEndHandler);
 
     var node = svg.append('g').attr('class', 'nodes')
       .selectAll('circle')
