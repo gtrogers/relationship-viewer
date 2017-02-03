@@ -52,7 +52,7 @@ vis.processData = function (data) {
     for (var j = 0; j < data.length; j++) {
       if (i === j) break;
       var sameness = similarity(data[i], data[j]);
-      if (sameness > 1) {
+      if (sameness > 0) {
         processedData.links.push({
           "source": data[i].name,
           "target": data[j].name,
@@ -93,7 +93,7 @@ vis.drawGraph = function (csvUrl, centerX, centerY) {
     
     var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id }))
-      .force("charge", d3.forceManyBody())
+      .force("charge", d3.forceManyBody().strength(-75))
       .force("center", d3.forceCenter(cx, cy));
 
     var hoverHandler = function (d, i) {
@@ -123,7 +123,8 @@ vis.drawGraph = function (csvUrl, centerX, centerY) {
       .data(DATA.links)
       .enter()
       .append('line')
-      .attr('stroke-width', function (d) { return Math.sqrt(d.value) + 1; });
+      .attr('stroke-width', function (d) { return (d.value/5) * 10; }) // TODO - use total number of categories for normalisation
+      .attr('opacity', function (d) { return (d.value/5)*0.5 + 0.5 });
 
     var node = svg.append('g').attr('class', 'nodes')
       .selectAll('circle')
