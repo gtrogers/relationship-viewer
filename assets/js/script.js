@@ -12,10 +12,10 @@ vis.dropHandler = function (event) {
     var content = null;
     
     var fileUrl = window.URL.createObjectURL(file);
-    vis.drawGraph(fileUrl);    
+    vis.drawGraph(fileUrl, event.x, event.y);    
     var overlay = document.getElementById('drop-zone');
     overlay.classList.remove("target");
-    //TODO file type validation
+    console.log(event.clientX, event.clientY);
   }
 
 }
@@ -65,6 +65,7 @@ vis.processData = function (data) {
   for (var i = 0; i  < data.length; i++) {
     processedData.nodes.push({
       id: data[i].name,
+      datum: data[i],
       group: 1
     });
   }
@@ -72,31 +73,50 @@ vis.processData = function (data) {
   return processedData;
 }
 
-vis.drawGraph = function (csvUrl) {
+vis.drawGraph = function (csvUrl, centerX, centerY) {
   d3.csv(csvUrl, function (data) {
     var DATA = vis.processData(data);
     console.log(DATA);
 
     var color = d3.scaleLinear().domain([0, DATA.nodes.length])
-      .interpolate(d3.interpolateHcl)
       .range([
-          d3.rgb(255, 244, 80),
-          d3.rgb(247, 143, 49),
-          d3.rgb(238, 49, 45),
-          d3.rgb(177, 28, 84),
-          d3.rgb(106, 37, 105),
-          d3.rgb(239, 91, 161),
-          d3.rgb(158, 120, 95)
+          d3.rgb(128, 201, 210),
+          d3.rgb(106, 37, 105)
       ])
 
-      var svg = d3.select('svg'),
-    width = +svg.attr('width'),
-    height = +svg.attr('height');
+    var svg = d3.select('svg'),
+        width = +svg.attr('width'),
+        height = +svg.attr('height');
 
+    var cx = centerX - document.getElementsByTagName('svg')[0].getBoundingClientRect().left;
+    var cy = centerY - document.getElementsByTagName('svg')[0].getBoundingClientRect().top;
+    
     var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id }))
       .force("charge", d3.forceManyBody())
-      .force("center", d3.forceCenter(width/2, height/2));
+      .force("center", d3.forceCenter(cx, cy));
+
+    var hoverHandler = function (d, i) {
+      d3.select(this)
+        .attr('fill', d3.rgb(247, 143, 49))
+        .attr('r', 7);
+
+      console.log(d);
+      d3.select('svg')
+        .append('text')
+        .attr('id', 'label')
+        .attr('x', 16)
+        .attr('y', 16)
+        .text(d.datum.name + " " + d.datum.company);
+    }
+
+    var hoverEndHandler = function (d, i) {
+      d3.select(this)
+        .attr('fill', color(i))
+        .attr('r', 5);
+
+      d3.select('#label').remove();
+    }
 
     var link = svg.append('g').attr('class', 'links')
       .selectAll('line')
@@ -111,11 +131,15 @@ vis.drawGraph = function (csvUrl) {
       .enter()
       .append('circle')
       .attr('r', 5)
-      .attr('fill', function (d, i) { return color(i); });
+      .attr('fill', function (d, i) { return color(i); })
+      .on("mouseover", hoverHandler)
+      .on("mouseout", hoverEndHandler);
 
     node.append('title').text(function (d) { return d.id });
 
     simulation.nodes(DATA.nodes).on('tick', function () {
+      var dx = (cx - (width / 2))/10, dy = (cy - (height / 2))/10;
+      simulation.force("center", d3.forceCenter(cx -= dx, cy -= dy));
       link
         .attr('x1', function (d) { return d.source.x; })
         .attr('y1', function (d) { return d.source.y; })
